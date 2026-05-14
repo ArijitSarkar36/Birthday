@@ -10,6 +10,12 @@
 
 <body>
 
+  <!-- ===================== AUDIO & FLOATING CONTROLS ===================== -->
+  <audio id="bg-music" src="feels.mp3" preload="auto"></audio>
+  <button id="music-btn" class="music-toggle-btn" onclick="toggleMusic()" aria-label="Toggle Background Music">
+    🔇 Music: OFF
+  </button>
+
   <!-- ===================== SECTION 1: HERO ===================== -->
   <section id="hero">
 
@@ -37,7 +43,7 @@
 
     <!-- Button scrolls to cake section -->
     <button class="btn-celebrate"
-      onclick="document.getElementById('cake-section').scrollIntoView({ behavior: 'smooth' })"
+      onclick="startCelebration()"
       aria-label="Start Celebration">
       🎉 Start Celebration
     </button>
@@ -61,7 +67,22 @@
       <div class="flag blue"></div>
     </div>
 
+    <!-- Left Side Image -->
+    <div class="side-image left-image">
+      <img src="left.jpg" alt="Memories with Aayu" />
+    </div>
+
+    <!-- Right Side Image -->
+    <div class="side-image right-image">
+      <img src="right.md.jpg" alt="Memories with Aayu" />
+    </div>
+
     <h2 class="section-title">Make a Wish! 🕯️</h2>
+
+    <!-- Center Image -->
+    <div class="center-image">
+      <img src="center.jpg" alt="Memories with Aayu" />
+    </div>
 
     <div class="cake-stage" role="img"
       aria-label="Animated 3-layer chocolate birthday cake with white cream drip and a candle">
@@ -201,7 +222,48 @@
   </footer>
 
   <script>
+    let isMusicPlaying = false;
+    let bgMusic, musicBtn;
+
+    function startCelebration() {
+      document.getElementById('cake-section').scrollIntoView({ behavior: 'smooth' });
+      if (!isMusicPlaying) {
+        toggleMusic();
+      }
+    }
+
+    function toggleMusic() {
+      if (!bgMusic) bgMusic = document.getElementById("bg-music");
+      if (!musicBtn) musicBtn = document.getElementById("music-btn");
+
+      if (!isMusicPlaying) {
+        if (bgMusic.currentTime < 10) {
+          bgMusic.currentTime = 10; // Skip first 10 seconds
+        }
+        bgMusic.play().then(() => {
+          isMusicPlaying = true;
+          musicBtn.classList.add("playing");
+          musicBtn.innerHTML = "🔊 Music: ON";
+        }).catch(err => console.log("Autoplay prevented:", err));
+      } else {
+        bgMusic.pause();
+        isMusicPlaying = false;
+        musicBtn.classList.remove("playing");
+        musicBtn.innerHTML = "🔇 Music: OFF";
+      }
+    }
+
     document.addEventListener("DOMContentLoaded", () => {
+      bgMusic = document.getElementById("bg-music");
+      musicBtn = document.getElementById("music-btn");
+
+      bgMusic.addEventListener("timeupdate", () => {
+        // Skip last 10 seconds and loop back to the 10-second mark
+        if (bgMusic.duration && bgMusic.currentTime >= bgMusic.duration - 10) {
+          bgMusic.currentTime = 10;
+        }
+      });
+
       const cakeStage = document.querySelector(".cake-stage");
       const cakeSection = document.getElementById("cake-section");
 
